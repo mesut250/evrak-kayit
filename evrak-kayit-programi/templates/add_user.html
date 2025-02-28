@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Yeni Kullanıcı Ekle
+{% endblock %}
+
+{% block content %}
+<style>
+    .add-user-form {
+        background: #ffffff;
+        border: 1px solid #3498db;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 500px;
+        margin: 0 auto;
+        transition: transform 0.3s ease;
+    }
+    .add-user-form:hover {
+        transform: translateY(-5px);
+    }
+    .add-user-form label {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+    .add-user-form .btn-save {
+        background: linear-gradient(45deg, #2ecc71, #27ae60);
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .add-user-form .btn-save:hover {
+        background: linear-gradient(45deg, #27ae60, #219653);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .form-check-label {
+        color: #2c3e50;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1><i class="fas fa-user-plus"></i> Yeni Kullanıcı Ekle</h1>
+    <div class="add-user-form">
+        <form method="POST">
+            <div class="mb-3">
+                <label for="username" class="form-label">Kullanıcı Adı</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Şifre</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Rol</label>
+                <select id="role" name="role" class="form-control">
+                    <option value="user">Kullanıcı</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Yetkiler</label>
+                <div class="form-check">
+                    <input type="checkbox" id="can_edit" name="can_edit" class="form-check-input">
+                    <label for="can_edit" class="form-check-label">Düzenleme</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="can_delete" name="can_delete" class="form-check-input">
+                    <label for="can_delete" class="form-check-label">Silme</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-save"><i class="fas fa-save"></i> Kaydet</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

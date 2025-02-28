@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Güncel Kayıtları Listele
+{% endblock %}
+
+{% block content %}
+<style>
+    .list-container { 
+        background: #852020; 
+        padding: 30px; 
+        border-radius: 15px; 
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
+        margin-top: 20px; 
+        max-width: 100%; 
+    }
+    .filter-card { 
+        background: #f8f9fa; 
+        padding: 20px; 
+        border-radius: 10px; 
+        margin-bottom: 20px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); 
+    }
+    .filter-card label { 
+        font-weight: bold; 
+        color: #e74c3c; 
+        margin-right: 15px; 
+    }
+    .filter-card select, .filter-card input[type="text"] { 
+        border-radius: 8px; 
+        border: 1px solid #3498db; 
+        padding: 8px; 
+        font-size: 1rem; 
+        width: 250px; 
+        background: #ffffff; 
+        color: #2c3e50; 
+    }
+    .filter-card .btn-filter { 
+        background: linear-gradient(45deg, #2ecc71, #27ae60); 
+        border: none; 
+        padding: 10px 20px; 
+        color: white; 
+        border-radius: 8px; 
+        transition: all 0.3s ease; 
+    }
+    .filter-card .btn-filter:hover { 
+        background: linear-gradient(45deg, #27ae60, #219653); 
+        transform: translateY(-2px); 
+    }
+    .filter-card .btn-clear { 
+        background: linear-gradient(45deg, #e74c3c, #c0392b); 
+        border: none; 
+        padding: 10px 20px; 
+        color: white; 
+        border-radius: 8px; 
+        transition: all 0.3s ease; 
+    }
+    .filter-card .btn-clear:hover { 
+        background: linear-gradient(45deg, #c0392b, #992d22); 
+        transform: translateY(-2px); 
+    }
+    .table-wrapper {
+        overflow-x: auto;
+        max-width: 100%;
+    }
+    .table-custom { 
+        border-radius: 10px; 
+        overflow: hidden; 
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+        width: 100%; 
+        background: #ffffff; 
+        border-collapse: collapse; 
+        min-width: 2000px;  /* Büro Sayısı ve Dosya No korunduğu için genişlik aynı */
+    }
+    .table-custom thead { 
+        background: linear-gradient(45deg, #3498db, #2980b9); 
+        color: #ffffff; 
+    }
+    .table-custom th { 
+        text-transform: capitalize; 
+        padding: 10px; 
+        font-size: 0.9rem; 
+        position: sticky; 
+        top: 0; 
+        z-index: 1; 
+        border-right: 1px solid rgba(66, 3, 3, 0.2); 
+        min-width: 120px; 
+    }
+    .table-custom td { 
+        vertical-align: middle; 
+        padding: 10px; 
+        font-size: 0.9rem; 
+        border-right: 1px solid #d3d3d3; 
+        color: #2c3e50; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        max-width: 200px; 
+    }
+    .table-custom tbody tr { 
+        transition: background 0.2s ease; 
+    }
+    .table-custom tbody tr:hover { 
+        background: #ecf0f1; 
+    }
+    .badge { 
+        font-size: 0.8rem; 
+        padding: 5px 10px; 
+        border-radius: 20px; 
+    }
+    .btn-action { 
+        padding: 5px 10px; 
+        border-radius: 6px; 
+        font-size: 0.8rem; 
+        margin-right: 5px; 
+    }
+    .btn-export { 
+        background: linear-gradient(45deg, #e67e22, #d35400); 
+        border: none; 
+        padding: 10px 20px; 
+        color: white; 
+        border-radius: 8px; 
+        transition: all 0.3s ease; 
+    }
+    .btn-export:hover { 
+        background: linear-gradient(45deg, #d35400, #c0392b); 
+        transform: translateY(-2px); 
+    }
+    .resizer { 
+        position: absolute; 
+        right: -5px; 
+        top: 0; 
+        height: 100%; 
+        width: 5px; 
+        background: rgba(0, 0, 0, 0.3); 
+        cursor: col-resize; 
+    }
+    .pagination a {
+        color: #3498db;
+        padding: 8px 16px;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+    .pagination a:hover {
+        background: #ecf0f1;
+    }
+    .pagination .active a {
+        background: #3498db;
+        color: #ffffff;
+    }
+    .modal-body iframe {
+        width: 100%;
+        height: 500px;
+        border: none;
+    }
+    .no-records {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+</style>
+
+<div class="container-fluid mt-5 px-4">
+    <h1 class="mb-4"><i class="fas fa-list"></i> Güncel Kayıtlar</h1>
+    <div class="list-container">
+        <!-- Filtreleme ve Arama Alanı -->
+        <div class="filter-card">
+            <form method="GET" action="{{ url_for('list_records') }}" class="d-flex align-items-center justify-content-center flex-wrap gap-3" id="filterForm">
+                <div>
+                    <label for="search">Arama:</label>
+                    <input type="text" id="search" name="search" class="form-control" value="{{ search_query }}" placeholder="Tüm alanlarda ara..." autocomplete="off">
+                </div>
+                <div>
+                    <label for="zimmetlenen_personel">Zimmetlenen Personel:</label>
+                    <select id="zimmetlenen_personel" name="zimmetlenen_personel" class="form-control">
+                        <option value="">Tümü</option>
+                        {% for personel in filter_options['zimmetlenen_personel'] %}
+                            <option value="{{ personel }}" {% if personel == selected_filters['zimmetlenen_personel'] %}selected{% endif %}>{{ personel }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="dosya_durumu">Durum:</label>
+                    <select id="dosya_durumu" name="dosya_durumu" class="form-control">
+                        <option value="">Tümü</option>
+                        {% for durum in filter_options['dosya_durumu'] %}
+                            <option value="{{ durum }}" {% if durum == selected_filters['dosya_durumu'] %}selected{% endif %}>{{ durum }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-filter">Filtrele</button>
+                <button type="button" class="btn btn-clear" onclick="clearFilters()">Temizle</button>
+            </form>
+        </div>
+
+        <!-- Dışa Aktarma Butonları -->
+        <div class="mb-4 text-center">
+            <a href="{{ url_for('export_excel', search=search_query, zimmetlenen_personel=selected_filters['zimmetlenen_personel'], dosya_durumu=selected_filters['dosya_durumu']) }}" class="btn btn-export me-3">
+                <i class="fas fa-file-excel"></i> Excel'e Aktar
+            </a>
+            <a href="{{ url_for('export_pdf', search=search_query, zimmetlenen_personel=selected_filters['zimmetlenen_personel'], dosya_durumu=selected_filters['dosya_durumu']) }}" class="btn btn-export">
+                <i class="fas fa-file-pdf"></i> PDF'e Aktar
+            </a>
+        </div>
+
+        <!-- Kayıt Tablosu veya Boş Mesaj -->
+        <div class="table-wrapper">
+            {% if records %}
+                <table class="table table-custom" id="resizableTable">
+                    <thead>
+                        <tr>
+                            <th data-col="0">Kayıt No<div class="resizer"></div></th>
+                            <th data-col="1">Dosya No<div class="resizer"></div></th>
+                            <th data-col="2">Gelen EBYS No<div class="resizer"></div></th>
+                            <th data-col="3">Geldiği Yer<div class="resizer"></div></th>
+                            <th data-col="4">İşlem Tarihi<div class="resizer"></div></th>
+                            <th data-col="5">Ad ve Soyad<div class="resizer"></div></th>
+                            <th data-col="6">TC Kimlik No<div class="resizer"></div></th>
+                            <th data-col="7">Soruşturma No<div class="resizer"></div></th>
+                            <th data-col="8">Ceraim No<div class="resizer"></div></th>
+                            <th data-col="9">Ceraim Verme Tarihi<div class="resizer"></div></th>
+                            <th data-col="10">NCMEC Rapor No<div class="resizer"></div></th>
+                            <th data-col="11">Açıklama<div class="resizer"></div></th>
+                            <th data-col="12">Durum<div class="resizer"></div></th>
+                            <th data-col="13">Büro Sayısı<div class="resizer"></div></th>
+                            <th data-col="14">Klasör<div class="resizer"></div></th>
+                            <th data-col="15">Zimmetlenen Personel<div class="resizer"></div></th>
+                            <th data-col="16">Zimmet Tarihi<div class="resizer"></div></th>
+                            <th data-col="17">Gönderilen EBYS No<div class="resizer"></div></th>
+                            <th data-col="18">Dosya<div class="resizer"></div></th>
+                            <th data-col="19">İşlemler<div class="resizer"></div></th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsTable">
+                        {% for record in records %}
+                        <tr>
+                            <td>{{ record.kayit_no }}</td>
+                            <td>{{ record.dosya_no }}</td>
+                            <td>{{ record.gelen_ebys_no | default('-') }}</td>
+                            <td>{{ record.gelen_yer | default('-') }}</td>
+                            <td>{{ record.islem_tarihi.strftime('%d.%m.%Y') if record.islem_tarihi else '-' }}</td>
+                            <td>{{ record.adi_soyadi | default('-') }}</td>
+                            <td>{{ record.tc_kimlik | default('-') }}</td>
+                            <td>{{ record.soru_numara | default('-') }}</td>
+                            <td>{{ record.ceraim_no | default('-') }}</td>
+                            <td>{{ record.ceraim_verme_tarihi.strftime('%d.%m.%Y') if record.ceraim_verme_tarihi else '-' }}</td>
+                            <td>{{ record.ncmec_rapor | default('-') }}</td>
+                            <td>{{ record.aciklama | default('-') }}</td>
+                            <td>
+                                {% if record.dosya_durumu == 'Açık' %}
+                                    <span class="badge bg-success">Açık</span>
+                                {% elif record.dosya_durumu == 'Kapalı' %}
+                                    <span class="badge bg-danger">Kapalı</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ record.dosya_durumu | default('-') }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ record.buro_sayisi if record.buro_sayisi is not none else '-' }}</td>
+                            <td>{{ record.klasor | default('-') }}</td>
+                            <td>{{ record.zimmetlenen_personel | default('-') }}</td>
+                            <td>{{ record.zimmet_tarihi.strftime('%d.%m.%Y') if record.zimmet_tarihi else '-' }}</td>
+                            <td>{{ record.gonderilen_ebys_no | default('-') }}</td>
+                            <td>
+                                {% if record.dosya_yolu %}
+                                    <button type="button" class="btn btn-info btn-sm btn-action preview-btn" data-bs-toggle="modal" data-bs-target="#previewModal" data-file="{{ url_for('static', filename=record.dosya_yolu) }}">
+                                        <i class="fas fa-eye"></i> Önizleme
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm btn-action" onclick="navigator.clipboard.writeText('{{ record.dosya_yolu }}')"><i class="fas fa-copy"></i> Kopyala</button>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('edit_record', record_id=record.id) }}" class="btn btn-warning btn-sm btn-action">
+                                    <i class="fas fa-edit"></i> Güncelle
+                                </a>
+                                {% if current_user.can('can_delete') or current_user.role == 'admin' %}
+                                <form action="{{ url_for('delete_record', record_id=record.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm btn-action" onclick="return confirm('Bu kaydı silmek istediğinize emin misiniz?');">
+                                        <i class="fas fa-trash"></i> Sil
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-records">Kayıt bulunamadı.</div>
+            {% endif %}
+        </div>
+        <!-- Sayfalama -->
+        <div class="mt-4 text-center">
+            {{ pagination.links }}
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Dosya Önizleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <iframe src="" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        let debounceTimer;
+        const canDelete = {{ (current_user.can('can_delete') or current_user.role == 'admin') | tojson }};
+        const editUrlBase = "/edit_record/";
+        const deleteUrlBase = "/delete_record/";
+
+        // Modal için dosya URL’sini ayarlama
+        $('#previewModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const fileUrl = button.data('file');
+            const modal = $(this);
+            modal.find('.modal-body iframe').attr('src', fileUrl);
+        });
+
+        // Modal kapandığında iframe’i sıfırlama
+        $('#previewModal').on('hidden.bs.modal', function () {
+            $(this).find('.modal-body iframe').attr('src', '');
+        });
+
+        $('#search').on('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const query = $(this).val().trim().toLowerCase();  // Arama sorgusunu küçük harfe çevir
+                const zimmetlenen_personel = $('#zimmetlenen_personel').val();
+                const dosya_durumu = $('#dosya_durumu').val();
+
+                $.ajax({
+                    url: '{{ url_for("search_records") }}',
+                    method: 'GET',
+                    data: {
+                        q: query,  // Küçük harfe çevrilmiş sorguyu gönder
+                        zimmetlenen_personel: zimmetlenen_personel,
+                        dosya_durumu: dosya_durumu
+                    },
+                    success: function(data) {
+                        const tbody = $('#recordsTable');
+                        tbody.empty();
+                        if (data.length > 0) {
+                            data.forEach(record => {
+                                const deleteButton = canDelete ? `
+                                    <form action="${deleteUrlBase}${record.id}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm btn-action" onclick="return confirm('Bu kaydı silmek istediğinize emin misiniz?');">
+                                            <i class="fas fa-trash"></i> Sil
+                                        </button>
+                                    </form>
+                                ` : '';
+                                const fileUrl = record.dosya_yolu ? `/static/uploads/${record.dosya_yolu.replace(/\\/g, '/')}` : '';
+                                const row = `
+                                    <tr>
+                                        <td>${record.kayit_no}</td>
+                                        <td>${record.dosya_no}</td>
+                                        <td>${record.gelen_ebys_no || '-'}</td>
+                                        <td>${record.gelen_yer || '-'}</td>
+                                        <td>${record.islem_tarihi || '-'}</td>
+                                        <td>${record.adi_soyadi || '-'}</td>
+                                        <td>${record.tc_kimlik || '-'}</td>
+                                        <td>${record.soru_numara || '-'}</td>
+                                        <td>${record.ceraim_no || '-'}</td>
+                                        <td>${record.ceraim_verme_tarihi || '-'}</td>
+                                        <td>${record.ncmec_rapor || '-'}</td>
+                                        <td>${record.aciklama || '-'}</td>
+                                        <td>
+                                            ${record.dosya_durumu === 'Açık' ? '<span class="badge bg-success">Açık</span>' : 
+                                              record.dosya_durumu === 'Kapalı' ? '<span class="badge bg-danger">Kapalı</span>' : 
+                                              '<span class="badge bg-secondary">' + (record.dosya_durumu || '-') + '</span>'}
+                                        </td>
+                                        <td>${record.buro_sayisi !== null ? record.buro_sayisi : '-'}</td>
+                                        <td>${record.klasor || '-'}</td>
+                                        <td>${record.zimmetlenen_personel || '-'}</td>
+                                        <td>${record.zimmet_tarihi || '-'}</td>
+                                        <td>${record.gonderilen_ebys_no || '-'}</td>
+                                        <td>
+                                            ${record.dosya_yolu ? 
+                                                `<button type="button" class="btn btn-info btn-sm btn-action preview-btn" data-bs-toggle="modal" data-bs-target="#previewModal" data-file="${fileUrl}"><i class="fas fa-eye"></i> Önizleme</button>` +
+                                                `<button class="btn btn-secondary btn-sm btn-action" onclick="navigator.clipboard.writeText('${record.dosya_yolu}')"><i class="fas fa-copy"></i> Kopyala</button>` : '-'}
+                                        </td>
+                                        <td>
+                                            <a href="${editUrlBase}${record.id}" class="btn btn-warning btn-sm btn-action">
+                                                <i class="fas fa-edit"></i> Güncelle
+                                            </a>
+                                            ${deleteButton}
+                                        </td>
+                                    </tr>`;
+                                tbody.append(row);
+                            });
+                        } else {
+                            tbody.html('<tr><td colspan="20" class="no-records">Kayıt bulunamadı.</td></tr>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Arama hatası:', error);
+                    }
+                });
+            }, 300); // 300ms gecikme ile debounce
+        });
+    });
+
+    function clearFilters() {
+        $('#filterForm')[0].reset();
+        window.location.href = '{{ url_for('list_records') }}';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const table = document.getElementById('resizableTable');
+        const headers = table.querySelectorAll('th');
+        let resizingElement = null;
+        let startX = 0;
+        let startWidth = 0;
+
+        headers.forEach((header, index) => {
+            const resizer = header.querySelector('.resizer');
+            if (resizer) {
+                resizer.addEventListener('mousedown', (e) => {
+                    resizingElement = header;
+                    startX = e.pageX;
+                    startWidth = header.offsetWidth;
+                    document.addEventListener('mousemove', resize);
+                    document.addEventListener('mouseup', stopResize);
+                });
+            }
+
+            const savedWidth = localStorage.getItem(`colWidth-${index}`);
+            if (savedWidth) {
+                header.style.width = savedWidth;
+            }
+        });
+
+        function resize(e) {
+            if (resizingElement) {
+                const newWidth = startWidth + (e.pageX - startX);
+                resizingElement.style.width = `${newWidth}px`;
+            }
+        }
+
+        function stopResize() {
+            if (resizingElement) {
+                const colIndex = resizingElement.getAttribute('data-col');
+                localStorage.setItem(`colWidth-${colIndex}`, resizingElement.style.width);
+                resizingElement = null;
+            }
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResize);
+        }
+    });
+</script>
+{% endblock %}

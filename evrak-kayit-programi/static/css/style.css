@@ -1,0 +1,102 @@
+:root {
+    --primary-blue: #3498db;
+    --secondary-blue: #2980b9;
+    --primary-red: #e74c3c;
+    --secondary-red: #c0392b;
+    --primary-green: #2ecc71;
+    --secondary-green: #27ae60;
+    --primary-orange: #e67e22;
+    --secondary-orange: #d35400;
+}
+
+body.light {
+    background: linear-gradient(135deg, #f0f4f8, #e2e8f0);
+    color: #2c3e50;
+}
+
+body.dark {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #ecf0f1;
+}
+
+body.dark .card, body.dark .table, body.dark .form-control, body.dark .list-container, body.dark .filter-card {
+    background: #34495e;
+    color: #ecf0f1;
+    border-color: var(--secondary-blue);
+}
+
+body.dark .sidebar {
+    background: linear-gradient(180deg, #2980b9, #1f6391);
+}
+
+body.dark .btn-primary {
+    background: linear-gradient(45deg, #2980b9, #1f6391);
+}
+
+body.dark .btn-primary:hover {
+    background: linear-gradient(45deg, #1f6391, #164d73);
+}
+
+body.dark .btn-action {
+    background: linear-gradient(45deg, #c0392b, #a93226);
+}
+
+body.dark .btn-action:hover {
+    background: linear-gradient(45deg, #a93226, #8c2a22);
+}
+
+body.dark .table thead {
+    background: linear-gradient(90deg, #34495e, #4a6277);
+}
+
+body.dark .table tbody tr:nth-child(odd) {
+    background-color: #3b5266;
+}
+
+body.dark .table tbody tr:hover {
+    background-color: #4a6277;
+}
+
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, var(--primary-blue), var(--secondary-blue));
+    padding-top: 20px;
+    color: #ffffff;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar a {
+    color: #ffffff;
+    padding: 15px 20px;
+    text-decoration: none;
+    display: block;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.sidebar a:hover {
+    background: #2c3e50;
+    transform: translateX(5px);
+}
+
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-red), var(--secondary-red));
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, var(--secondary-red), #a93226);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ 'Excel' if export_type == 'excel' else 'PDF' }} Dışa Aktar
+{% endblock %}
+
+{% block content %}
+<style>
+    .export-form {
+        background: #ffffff;
+        border: 1px solid #3498db;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 600px;
+        margin: 0 auto;
+        transition: transform 0.3s ease;
+    }
+    .export-form:hover {
+        transform: translateY(-5px);
+    }
+    .export-form label {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+    .export-form .form-check-label {
+        color: #2c3e50;
+    }
+    .export-form .btn-export {
+        background: linear-gradient(45deg, #e67e22, #d35400);
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .export-form .btn-export:hover {
+        background: linear-gradient(45deg, #d35400, #c0392b);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<div class="container mt-5">
+    <h1><i class="fas fa-file-{{ 'excel' if export_type == 'excel' else 'pdf' }}"></i> {{ 'Excel' if export_type == 'excel' else 'PDF' }} Dışa Aktar</h1>
+    <div class="export-form">
+        <form method="POST" action="{{ url_for('export_' + export_type) }}">
+            <div class="mb-3">
+                <label>Sütunlar</label>
+                {% for column in columns %}
+                <div class="form-check">
+                    <input type="checkbox" id="{{ column }}" name="columns" value="{{ column }}" class="form-check-input">
+                    <label for="{{ column }}" class="form-check-label">{{ column.replace('_', ' ').title() }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-export"><i class="fas fa-file-{{ 'excel' if export_type == 'excel' else 'pdf' }}"></i> Dışa Aktar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

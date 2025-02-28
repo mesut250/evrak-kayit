@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Yeni Kayıt Oluştur
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Sayfa Arkaplan */
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        background: #b5bb66; /* Hafif gri arka plan */
+    }
+
+    /* Arkaplan */
+    .card {
+        width: 100%;
+        max-width: 1200px;
+        background: #1c42ee;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        padding: 20px;
+    }
+    .card-header {
+        background: #007bff; /* Mavi başlık */
+        color: #ffffff;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+        padding: 15px;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    /* Yazı */
+    .form-label {
+        color: #eeff00;
+        font-weight: 500;
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+    .form-control, .form-select {
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        padding: 10px 12px;
+        color: #495057;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        width: 100%;
+        max-width: 350px; /* İdeal uzunluk */
+        height: 40px; /* İdeal yükseklik */
+        margin: 0 auto;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        outline: none;
+    }
+    textarea.form-control {
+        min-height: 100px;
+        max-width: 700px; /* Açıklama için daha geniş */
+        height: auto;
+        resize: vertical;
+    }
+    .btn-primary {
+        background: #007bff;
+        border: none;
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: background 0.2s, transform 0.2s;
+        color: #ffffff;
+    }
+    .btn-primary:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+    }
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: background 0.2s, transform 0.2s;
+        color: #ffffff;
+    }
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    .alert {
+        border-radius: 6px;
+        margin-bottom: 15px;
+        border: 1px solid transparent;
+        padding: 10px 15px;
+    }
+    .alert-success {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+    .alert-danger {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    /* Sütunları yan yana getirme (grid ile) */
+    .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+        align-items: center;
+    }
+    /* Tek ekran için maksimum yükseklik ve overflow gizleme */
+    .card {
+        max-height: 90vh;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #007bff #f8f9fa;
+    }
+    .card::-webkit-scrollbar {
+        width: 8px;
+    }
+    .card::-webkit-scrollbar-track {
+        background: #2ce67f;
+        border-radius: 6px;
+    }
+    .card::-webkit-scrollbar-thumb {
+        background: #007bff;
+        border-radius: 6px;
+        border: 2px solid #f8f9fa;
+    }
+    /* Responsive ayarlar */
+    @media (max-width: 768px) {
+        .row {
+            grid-template-columns: 1fr;
+        }
+        .card {
+            padding: 15px;
+            max-width: 90%;
+        }
+        .card-header {
+            font-size: 1.2rem;
+            padding: 10px;
+        }
+        .btn-primary, .btn-secondary {
+            padding: 8px 20px;
+            font-size: 1rem;
+        }
+        .form-control, .form-select {
+            max-width: 100%; /* Mobil cihazlarda tam genişlik */
+        }
+        textarea.form-control {
+            max-width: 100%; /* Mobil cihazlarda tam genişlik */
+        }
+    }
+</style>
+
+<div class="form-container">
+    <div class="card">
+        <div class="card-header">
+            <h1><i class="fas fa-plus"></i> Yeni Kayıt Oluştur</h1>
+        </div>
+        <div class="card-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('kayit_form') }}" method="POST" class="row g-3" enctype="multipart/form-data">
+                <div class="col">
+                    <label for="gelenEbysNo" class="form-label">Gelen EBYS No:</label>
+                    <input type="text" class="form-control" id="gelenEbysNo" name="gelenEbysNo">
+                </div>
+                <div class="col">
+                    <label for="gelenYer" class="form-label">Geldiği Yer:</label>
+                    <input type="text" class="form-control" id="gelenYer" name="gelenYer">
+                </div>
+                <div class="col">
+                    <label for="islemTarihi" class="form-label">İşlem Tarihi:</label>
+                    <input type="date" class="form-control" id="islemTarihi" name="islemTarihi">
+                </div>
+                <div class="col">
+                    <label for="adiSoyadi" class="form-label">Ad ve Soyad:</label>
+                    <input type="text" class="form-control" id="adiSoyadi" name="adiSoyadi">
+                </div>
+                <div class="col">
+                    <label for="tcKimlik" class="form-label">TC Kimlik No:</label>
+                    <input type="text" class="form-control" id="tcKimlik" name="tcKimlik" maxlength="11">
+                </div>
+                <div class="col">
+                    <label for="soruNumara" class="form-label">Soruşturma No:</label>
+                    <input type="text" class="form-control" id="soruNumara" name="soruNumara">
+                </div>
+                <div class="col">
+                    <label for="ceraimNo" class="form-label">Ceraim No:</label>
+                    <input type="text" class="form-control" id="ceraimNo" name="ceraimNo">
+                </div>
+                <div class="col">
+                    <label for="ceraimVermeTarihi" class="form-label">Ceraim Verme Tarih:</label>
+                    <input type="date" class="form-control" id="ceraimVermeTarihi" name="ceraimVermeTarihi">
+                </div>
+                <div class="col">
+                    <label for="ncmecRapor" class="form-label">NCMEC Rapor No:</label>
+                    <input type="text" class="form-control" id="ncmecRapor" name="ncmecRapor">
+                </div>
+                <div class="col">
+                    <label for="dosyaDurumu" class="form-label">Durum:</label>
+                    <select class="form-control" id="dosyaDurumu" name="dosyaDurumu">
+                        <option value="Açık">Açık</option>
+                        <option value="Kapalı">Kapalı</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label for="buroSayisi" class="form-label">Büro Sayısı:</label>
+                    <input type="number" class="form-control" id="buroSayisi" name="buroSayisi">
+                </div>
+                <div class="col">
+                    <label for="klasor" class="form-label">Klasör:</label>
+                    <input type="text" class="form-control" id="klasor" name="klasor">
+                </div>
+                <div class="col">
+                    <label for="zimmetlenenPersonel" class="form-label">Zimmetlenen Personel:</label>
+                    <input type="text" class="form-control" id="zimmetlenenPersonel" name="zimmetlenenPersonel">
+                </div>
+                <div class="col">
+                    <label for="zimmetTarihi" class="form-label">Zimmet Tarihi:</label>
+                    <input type="date" class="form-control" id="zimmetTarihi" name="zimmetTarihi">
+                </div>
+                <div class="col">
+                    <label for="gonderilenEbysNo" class="form-label">Gönderilen EBYS No:</label>
+                    <input type="text" class="form-control" id="gonderilenEbysNo" name="gonderilenEbysNo">
+                </div>
+                <div class="col">
+                    <label for="dosya" class="form-label">Evrak Tarama (PDF/Resim):</label>
+                    <input type="file" class="form-control" id="dosya" name="dosya" accept=".pdf,.jpg,.png">
+                </div>
+                <div class="col-12 mt-3">
+                    <label for="aciklama" class="form-label">Açıklama:</label>
+                    <textarea class="form-control" id="aciklama" name="aciklama" rows="3"></textarea>
+                </div>
+                <div class="col-12 d-grid gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Kaydet</button>
+                    <a href="{{ url_for('home') }}" class="btn btn-secondary mt-2">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Başarı Modal'ı -->
+{% if show_success %}
+<div class="modal fade show" id="successModal" tabindex="-1" aria-modal="true" style="display: block;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #28a745; color: white; border-radius: 10px;">
+            <div class="modal-header" style="border-bottom: none;">
+                <h5 class="modal-title">KAYIT BAŞARILI</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="window.location.href='{{ url_for('list_records') }}';"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-check-circle" style="font-size: 3rem;"></i>
+                <p>EVRAKINIZ KAYDEDİLDİ<br>EVRAK NO: {{ kayit_no }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var successModal = new bootstrap.Modal(document.getElementById('successModal'), {});
+    successModal.show();
+</script>
+{% endif %}
+{% endblock %}

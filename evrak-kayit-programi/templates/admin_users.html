@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Kullanıcı Yönetimi
+{% endblock %}
+
+{% block content %}
+<style>
+    .users-table {
+        background: #ffffff;
+        border: 1px solid #3498db;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .users-table thead {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+        color: #ffffff;
+    }
+    .users-table th, .users-table td {
+        padding: 12px;
+        color: #2c3e50;
+    }
+    .users-table tbody tr:hover {
+        background: #ecf0f1;
+    }
+    .btn-admin {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-admin:hover {
+        background: linear-gradient(45deg, #c0392b, #a93226);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .btn-action {
+        margin-right: 5px;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1><i class="fas fa-users"></i> Kullanıcı Yönetimi</h1>
+    <a href="{{ url_for('add_user') }}" class="btn btn-admin mb-3"><i class="fas fa-user-plus"></i> Yeni Kullanıcı Ekle</a>
+    <div class="users-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kullanıcı Adı</th>
+                    <th>Rol</th>
+                    <th>Yetkiler</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        Düzenleme: {{ 'Evet' if user.can('can_edit') else 'Hayır' }}<br>
+                        Silme: {{ 'Evet' if user.can('can_delete') else 'Hayır' }}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('edit_user', user_id=user.id) }}" class="btn btn-warning btn-sm btn-action"><i class="fas fa-edit"></i> Düzenle</a>
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm btn-action" onclick="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');"><i class="fas fa-trash"></i> Sil</button>
+                        </form>
+                        <button type="button" class="btn btn-primary btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#changePasswordModal{{ user.id }}"><i class="fas fa-key"></i> Şifre Değiştir</button>
+                    </td>
+                </tr>
+                <div class="modal fade" id="changePasswordModal{{ user.id }}" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ user.username }} Şifresini Değiştir</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="{{ url_for('change_user_password', user_id=user.id) }}">
+                                <div class="modal-body">
+                                    <label for="new_password" class="form-label" style="color: #e74c3c; font-weight: bold;">Yeni Şifre:</label>
+                                    <input type="password" id="new_password" name="new_password" class="form-control" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

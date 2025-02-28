@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Yeni Kayıt Oluştur
+{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    .card {
+        width: 100%;
+        max-width: 1200px;
+        background: #ffffff;
+        border: 1px solid #3498db;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+    .card-header {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+        color: #ffffff;
+        border-radius: 10px 10px 0 0;
+        text-align: center;
+        padding: 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .form-label {
+        color: #e74c3c;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    .form-control:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 8px rgba(231, 76, 60, 0.3);
+    }
+</style>
+
+<div class="form-container">
+    <div class="card">
+        <div class="card-header">
+            <h1><i class="fas fa-plus"></i> Yeni Kayıt Oluştur</h1>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('save_record') }}" method="POST" class="row g-3" enctype="multipart/form-data">
+                <div class="col-md-6">
+                    <label for="gelenEbysNo" class="form-label">Gelen EBYS No:</label>
+                    <input type="text" class="form-control" id="gelenEbysNo" name="gelenEbysNo">
+                    <label for="gelenYer" class="form-label">Geldiği Yer:</label>
+                    <input type="text" class="form-control" id="gelenYer" name="gelenYer">
+                    <label for="islemTarihi" class="form-label">İşlem Tarihi:</label>
+                    <input type="date" class="form-control" id="islemTarihi" name="islemTarihi">
+                    <label for="adiSoyadi" class="form-label">Ad ve Soyad:</label>
+                    <input type="text" class="form-control" id="adiSoyadi" name="adiSoyadi">
+                    <label for="tcKimlik" class="form-label">TC Kimlik No:</label>
+                    <input type="text" class="form-control" id="tcKimlik" name="tcKimlik" maxlength="11">
+                    <label for="soruNumara" class="form-label">Soruşturma No:</label>
+                    <input type="text" class="form-control" id="soruNumara" name="soruNumara">
+                    <label for="ceraimNo" class="form-label">Ceraim No:</label>
+                    <input type="text" class="form-control" id="ceraimNo" name="ceraimNo">
+                    <label for="ceraimVermeTarihi" class="form-label">Ceraim Verme Tarih:</label>
+                    <input type="date" class="form-control" id="ceraimVermeTarihi" name="ceraimVermeTarihi">
+                </div>
+                <div class="col-md-6">
+                    <label for="ncmecRapor" class="form-label">NCMEC Rapor No:</label>
+                    <input type="text" class="form-control" id="ncmecRapor" name="ncmecRapor">
+                    <label for="dosyaDurumu" class="form-label">Durum:</label>
+                    <select class="form-control" id="dosyaDurumu" name="dosyaDurumu">
+                        <option value="Açık">Açık</option>
+                        <option value="Kapalı">Kapalı</option>
+                        <option value="Devam Ediyor">Devam Ediyor</option>
+                    </select>
+                    <label for="buroSayisi" class="form-label">Büro Sayısı:</label>
+                    <input type="number" class="form-control" id="buroSayisi" name="buroSayisi">
+                    <label for="klasor" class="form-label">Klasör:</label>
+                    <input type="text" class="form-control" id="klasor" name="klasor">
+                    <label for="zimmetlenenPersonel" class="form-label">Zimmetlenen Personel:</label>
+                    <input type="text" class="form-control" id="zimmetlenenPersonel" name="zimmetlenenPersonel">
+                    <label for="zimmetTarihi" class="form-label">Zimmet Tarihi:</label>
+                    <input type="date" class="form-control" id="zimmetTarihi" name="zimmetTarihi">
+                    <label for="gonderilenEbysNo" class="form-label">Gönderilen EBYS No:</label>
+                    <input type="text" class="form-control" id="gonderilenEbysNo" name="gonderilenEbysNo">
+                    <label for="dosya" class="form-label">Evrak Tarama (PDF/Resim):</label>
+                    <input type="file" class="form-control" id="dosya" name="dosya" accept=".pdf,.jpg,.png">
+                </div>
+                <div class="col-12">
+                    <label for="aciklama" class="form-label">Açıklama:</label>
+                    <textarea class="form-control" id="aciklama" name="aciklama" rows="3"></textarea>
+                </div>
+                <div class="col-12 d-grid gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% if show_success %}
+<div class="modal fade show" id="successModal" tabindex="-1" aria-modal="true" style="display: block;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: linear-gradient(45deg, #2ecc71, #27ae60); color: white; border-radius: 15px;">
+            <div class="modal-header" style="border-bottom: none;">
+                <h5 class="modal-title">KAYIT BAŞARILI</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="window.location.href='{{ url_for('list_records') }}';"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-check-circle" style="font-size: 3rem;"></i>
+                <p>EVRAKINIZ KAYDEDİLDİ<br>EVRAK NO: {{ kayit_no }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var successModal = new bootstrap.Modal(document.getElementById('successModal'), {});
+    successModal.show();
+</script>
+{% endif %}
+{% endblock %}

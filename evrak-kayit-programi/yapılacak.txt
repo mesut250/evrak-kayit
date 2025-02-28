@@ -1,0 +1,10 @@
+Tamam şimdi sana programın gördüğüm eksik yönlerini söylüyorum. Ona göre düzelt . 
+1-) Kayıt Ekle kısmında Evrak taraması bulunmuyor. Bu tarama pdf ve resim dosyaları olsun.
+2-) Ana Sayfada Ayarlar ve Logları Görüntüle butonları yok. 
+3-) Kayıt Ekle kısmında bulunan Açıklama çerçevesi en sonda (Kaydet butonunun üzerinde olsun)
+4-) Kayıtları Listele kısmında Evrak taraması olmadığından Dosya başlığı yok. Dolayısıyla Dosya yolu kopyalama ve Önizleme de bulunmuyor. Bunları da ekle.
+5-) Kayıtlar kısmına Filtrelemeyi şu başlıklardan oluştur. (Adı Soyadı - TC Kimlik - Geldiği Yer - Soruşturma No - Ceraim No - NCMEC Rapor No - Zimmetlenen Personel - Durum) = Filtrele
+6-) Ayarlar kısmında Veritabanı Yönetim başlığı altındaki Veritabanını sıfırla seçeneği -  Admin Şifresi değiştir seçeneği yok. Tema Ayarları Açık Tema Koyu Tema seçeneği çalışmıyor. 
+ 7-) Kullanıcı Yönetim kısmında İşlemler başlığının altında Düzenle Sil var ama Şifre değiştir kısmı yok. (Admin diğer kullanıcıların şifresini değiştirebilsin.) 
+8-) Loglar Başlığı yok. Log kayıtlarını Kullanıcı Adı - Yapılan İşlem  - Tarih ve Saat (Gün Ay yıl - Saat -Dakika-Saniye ) şeklinde yaz. 
+Tüm bu işlemleri yaparken tasarımsal açıdan göze hitap edecek şekilde yaz.

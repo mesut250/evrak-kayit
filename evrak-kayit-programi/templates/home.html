@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Anasayfa
+{% endblock %}
+
+{% block content %}
+<style>
+    .card {
+        border-radius: 14px;
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #3498db;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card-body {
+        padding: 25px;
+        color: #2c3e50;
+    }
+    .card-title {
+        font-size: 24px;
+        margin-bottom: 12px;
+        color: #ffffff;
+    }
+    .card-text {
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+    .btn-custom {
+        padding: 12px 24px;
+        font-size: 18px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background: linear-gradient(45deg, #dcf500, #0920f1);
+        border: none;
+        color: #ffffff;
+    }
+    .btn-custom:hover {
+        background: linear-gradient(45deg, #2980b9, #1f6391);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .bg-info-card {
+        background: linear-gradient(45deg, #0a0e0b, #2980b9);
+        color: #ffffff;
+    }
+    .bg-action-card {
+        background: linear-gradient(45deg, #e67e22, #d35400);
+        color: #ffffff;
+    }
+    .bg-stats-card {
+        background: linear-gradient(45deg, #101a14, #27ae60);
+        color: #ffffff;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1 class="mb-4"><i class="fas fa-home"></i> Hoş Geldiniz, {{ current_user.username }}!</h1>
+    <p class="text-muted mb-4" style="font-size: 20px;">Bu, evrak yönetim sisteminin anasayfasıdır. Aşağıdaki kartlardan işlemlerinizi gerçekleştirebilirsiniz.</p>
+
+    <div class="row gy-3">
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body bg-info-card text-center">
+                    <h5 class="card-title"><i class="fas fa-info-circle"></i> Bilgi</h5>
+                    <p class="card-text">Kayıtlı Kullanıcılar:</p>
+                    <ul class="list-unstyled">
+                        {% for user in users %}
+                        <li>
+                            <span style="color: {% if user.is_online() %}#2ecc71{% else %}#e0e0e0{% endif %}">
+                                {{ user.username }} {% if user.is_online() %}(Çevrimiçi){% endif %}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-body bg-action-card">
+                            <h5 class="card-title"><i class="fas fa-file-alt"></i> Yeni Kayıt</h5>
+                            <p class="card-text">Yeni evrak kaydı oluştur.</p>
+                            <a href="{{ url_for('kayit_form') }}" class="btn btn-custom">Ekle</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-body bg-action-card">
+                            <h5 class="card-title"><i class="fas fa-list"></i> Kayıtları Listele</h5>
+                            <p class="card-text">Kayıtları görüntüle.</p>
+                            <a href="{{ url_for('list_records') }}" class="btn btn-custom">Listele</a>
+                        </div>
+                    </div>
+                </div>
+                {% if is_admin %}
+                <div class="col-6 mt-3">
+                    <div class="card h-100">
+                        <div class="card-body bg-action-card">
+                            <h5 class="card-title"><i class="fas fa-user-plus"></i> Kullanıcı Ekle</h5>
+                            <p class="card-text">Yeni kullanıcı ekle.</p>
+                            <a href="{{ url_for('add_user') }}" class="btn btn-custom">Ekle</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 mt-3">
+                    <div class="card h-100">
+                        <div class="card-body bg-action-card">
+                            <h5 class="card-title"><i class="fas fa-users"></i> Kullanıcı Yönetimi</h5>
+                            <p class="card-text">Kullanıcıları yönet.</p>
+                            <a href="{{ url_for('admin_users') }}" class="btn btn-custom">Yönet</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 mt-3">
+                    <div class="card h-100">
+                        <div class="card-body bg-action-card">
+                            <h5 class="card-title"><i class="fas fa-cogs"></i> Ayarlar</h5>
+                            <p class="card-text">Sistem ayarlarını yönet.</p>
+                            <a href="{{ url_for('settings') }}" class="btn btn-custom">Ayarlar</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Log Kayıtları linkini admin için ekliyoruz -->
+                <div class="col-6 mt-3">
+                    <div class="card h-100">
+                        <div class="card-body bg-action-card">
+                            <h5 class="card-title"><i class="fas fa-history"></i> Log Kayıtları</h5>
+                            <p class="card-text">Log kayıtlarını görüntüle.</p>
+                            <a href="{{ url_for('logs') }}" class="btn btn-custom">Görüntüle</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body bg-stats-card text-center">
+                    <h5 class="card-title"><i class="fas fa-chart-line"></i> Hızlı İstatistik</h5>
+                    <p class="card-text">Toplam Kayıt: <strong>{{ evrak_sayisi }}</strong></p>
+                    <p class="card-text">Kullanıcılar: <strong>{{ kullanici_sayisi }}</strong></p>
+                    <p class="card-text">Açık Dosyalar: <strong>{{ acik_dosya_sayisi }}</strong></p>
+                    <p class="card-text">Kapalı Dosyalar: <strong>{{ kapali_dosya_sayisi }}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
